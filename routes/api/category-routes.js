@@ -7,10 +7,7 @@ const { Category, Product } = require('../../models');
 router.get('/', async (req, res) => {
 
   Category.findAll({
-    include: [
-      { model: Product,
-      attributes: ['id', 'product_name', 'price', 'stock', 'category_id']}
-    ]
+    include: Product
   })
     .then(dbCategoryData => res.json(dbCategoryData))
     .catch(err => {
@@ -24,12 +21,7 @@ router.get('/:id', (req, res) => {
 
   Category.findOne({
     where: { id: req.params.id },
-    include: [
-      {
-        model: Product,
-        attributes: ['id', 'product_name', 'price', 'stock', 'category_id']
-      }
-    ]
+    include: Product
   })
     .then(dbCategoryData => res.json(dbCategoryData))
     .catch(err => {
@@ -53,7 +45,7 @@ router.post('/', (req, res) => {
 router.put('/:id', (req, res) => {
   Category.update(
     { category_name: req.body.category_name },
-    { where: { category_id: req.body.id } })
+    { where: { id: req.params.id } })
       .then(dbCategoryData => {
         if (!dbCategoryData) {
           res.status(404).json({ message: 'No category found with this id' });
@@ -69,7 +61,7 @@ router.put('/:id', (req, res) => {
 
 // delete a category by its `id` value
 router.delete('/:id', (req, res) => {
-  Category.destroy({ where: { category_id: req.body.id } })
+  Category.destroy({ where: { id: req.params.id } })
     .then(dbCategoryData => {
       if (!dbCategoryData) {
         res.status(404).json({ message: 'No category found with this id' });
